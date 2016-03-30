@@ -1,14 +1,23 @@
-#Part 2
+#Part 2: Counting complete observation cases
 
-#Write a function that reads a directory full of files and reports the number of 
-#completely observed cases in each data file. The function should return a data frame 
-#where the first column is the name of the file and the second column is the number of 
-#complete cases. A prototype of this function follows
-
-#You can see some example output from this function. The function that you write 
-#should be able to match this output. Please save your code to a file named 
-#complete.R. To run the submit script for this part, make sure your working directory 
-#has the file complete.R in it.
+# complete function reports the number of completely observed cases in each data file. 
+	#directory (character): local directory path for .csv monitor data files
+	#id (integer): monitor ID #. Each .csv file contains the data for a unique monitor.
+	#Note: return dataframe with [,1] = file name and [,2] = # completes
 
 complete <- function(directory, id = 1:332){
+	setwd(directory)
+	#List and read .csv files and append via rbind()...
+	specdata <- list.files(pattern = '\\.csv')
+	read_data <- lapply(specdata, read.csv, header = TRUE)
+	monitor_data <- do.call(rbind, read_data)
+	#Subset table by IDs, removing any observations with an NA value...
+	id_subset_rmna <- na.omit(monitor_data[which(monitor_data$ID %in% id),])
+	#Counting the number of records for each monitor ID
+	nobs <- tapply(id_subset_rmna$ID, id_subset_rmna$ID, length)
+	#Return as a data frame with 2 columns: id and nobs
+	nobs_summary <- data.frame(unique(id_subset_rmna$ID), nobs)
+	#Simplify column names for clarity...
+	colnames(nobs_summary) <- c("id", "nobs")
+	nobs_summary
 }
