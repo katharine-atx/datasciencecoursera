@@ -10,3 +10,5 @@
 #complete.R. To run the submit script for this part, make sure your working directory 
 #has the file complete.R in it.
 
+complete <- function(directory, id = 1:332){
+}
